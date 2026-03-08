@@ -1,0 +1,249 @@
+:root {
+  color-scheme: dark;
+  --bg: #0a0d11;
+  --panel: rgba(18, 24, 31, 0.82);
+  --panel-strong: rgba(24, 32, 42, 0.95);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f5f7fa;
+  --muted: #9fb0c3;
+  --accent: #ff7a18;
+  --accent-soft: rgba(255, 122, 24, 0.18);
+  --teal: #37c6ab;
+  --danger: #ff5f5f;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 24, 0.22), transparent 26%),
+    radial-gradient(circle at top right, rgba(55, 198, 171, 0.16), transparent 22%),
+    linear-gradient(160deg, #080b0f 0%, #101720 48%, #090c11 100%);
+}
+
+.layout {
+  width: min(1120px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.5fr 0.9fr;
+  gap: 20px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.panel-kicker {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--teal);
+  font-size: 12px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  max-width: 10ch;
+  font-size: clamp(2.4rem, 5vw, 4.7rem);
+  line-height: 0.95;
+}
+
+.subhead {
+  margin-top: 16px;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.server-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.meta-card,
+.panel,
+.source-card {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.meta-card {
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.meta-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.meta-card strong {
+  font-size: 1.45rem;
+}
+
+.panel {
+  padding: 22px;
+  border-radius: 28px;
+  margin-bottom: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.ghost-button,
+.mute-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ghost-button:hover,
+.mute-button:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.output-select {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.output-select select {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--panel-strong);
+  color: var(--text);
+  font: inherit;
+}
+
+.source-list {
+  display: grid;
+  gap: 14px;
+}
+
+.source-card {
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.source-main,
+.source-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.source-controls {
+  margin-top: 18px;
+}
+
+.source-title-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.source-platform {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.source-meta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.source-status {
+  min-width: 108px;
+  text-align: center;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+}
+
+.source-status.is-active {
+  background: var(--accent-soft);
+  color: #ffd2b1;
+}
+
+.source-status.is-offline {
+  color: var(--danger);
+}
+
+.volume-control {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 8px;
+}
+
+.volume-control span {
+  color: var(--muted);
+}
+
+.volume-control strong {
+  color: var(--text);
+}
+
+.volume-slider {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.mute-button.is-muted {
+  background: rgba(255, 95, 95, 0.12);
+  border-color: rgba(255, 95, 95, 0.28);
+  color: #ffb2b2;
+}
+
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .source-main,
+  .source-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .source-status {
+    width: fit-content;
+  }
+}

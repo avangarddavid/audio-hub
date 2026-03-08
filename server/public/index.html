@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Home Audio Hub</p>
+          <h1>Единая панель микширования источников</h1>
+          <p class="subhead">
+            Сервер принимает потоки, микширует их в реальном времени и выводит звук
+            на выбранное устройство.
+          </p>
+        </div>
+        <div class="server-meta">
+          <div class="meta-card">
+            <span>Обновлено</span>
+            <strong id="generatedAt">...</strong>
+          </div>
+          <div class="meta-card">
+            <span>Подключено</span>
+            <strong id="connectedCount">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Output</p>
+            <h2>Устройство вывода</h2>
+          </div>
+          <button id="refreshOutputs" class="ghost-button">Обновить список</button>
+        </div>
+        <label class="output-select">
+          <span>Выход</span>
+          <select id="outputSelect"></select>
+        </label>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Sources</p>
+            <h2>Аудиоисточники</h2>
+          </div>
+        </div>
+        <div id="sourceList" class="source-list"></div>
+      </section>
+    </main>
+
+    <template id="sourceCardTemplate">
+      <article class="source-card">
+        <div class="source-main">
+          <div>
+            <div class="source-title-row">
+              <h3 class="source-name"></h3>
+              <span class="source-platform"></span>
+            </div>
+            <p class="source-meta"></p>
+          </div>
+          <span class="source-status"></span>
+        </div>
+
+        <div class="source-controls">
+          <label class="volume-control">
+            <span>Громкость</span>
+            <input class="volume-slider" type="range" min="0" max="100" step="1" />
+            <strong class="volume-value"></strong>
+          </label>
+          <button class="mute-button"></button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/app.js"></script>
+  </body>
+  </html>

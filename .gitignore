@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+server/.env
+clients/linux/node_modules/
+clients/android/.gradle/
+clients/android/local.properties
+clients/android/**/build/
+clients/windows/**/bin/
+clients/windows/**/obj/
