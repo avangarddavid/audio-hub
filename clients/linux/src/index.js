@@ -7,6 +7,7 @@ const CHANNELS = 2;
 const FRAME_DURATION_MS = 20;
 const FRAME_SAMPLES = Math.floor((SAMPLE_RATE * FRAME_DURATION_MS) / 1000);
 const BYTES_PER_FRAME = FRAME_SAMPLES * CHANNELS * 2;
+const DEFAULT_CAPTURE_LATENCY_MS = 10;
 
 function parseArgs(argv) {
   const args = {};
@@ -51,6 +52,15 @@ function detectPulseMonitorSource() {
 
   const sinkName = result.stdout.trim();
   return sinkName ? `${sinkName}.monitor` : "default";
+}
+
+function commandExists(command) {
+  const probe = spawnSync(command, ["--help"], {
+    windowsHide: true,
+    stdio: "ignore"
+  });
+
+  return probe.status === 0 || probe.error?.code !== "ENOENT";
 }
 
 class LinuxAudioHubClient {
@@ -132,30 +142,61 @@ class LinuxAudioHubClient {
   }
 
   #startCapture() {
-    const ffmpegArgs = [
-      "-hide_banner",
-      "-loglevel",
-      "error",
-      "-fflags",
-      "nobuffer",
-      "-flags",
-      "low_delay",
-      "-f",
-      "pulse",
-      "-i",
-      this.options.pulseSource,
-      "-ac",
-      String(CHANNELS),
-      "-ar",
-      String(SAMPLE_RATE),
-      "-f",
-      "s16le",
-      "pipe:1"
-    ];
+    const backend = this.options.captureBackend === "auto"
+      ? (commandExists("parec") ? "parec" : "ffmpeg")
+      : this.options.captureBackend;
 
-    this.capture = spawn(this.options.ffmpegPath, ffmpegArgs, {
-      stdio: ["ignore", "pipe", "pipe"]
-    });
+    if (backend === "parec") {
+      const parecArgs = [
+        "--device",
+        this.options.pulseSource,
+        "--format=s16le",
+        `--rate=${SAMPLE_RATE}`,
+        `--channels=${CHANNELS}`,
+        `--latency-msec=${this.options.captureLatencyMs}`
+      ];
+
+      console.log(
+        `[linux-client] capture backend: parec, source=${this.options.pulseSource}, latency=${this.options.captureLatencyMs}ms`
+      );
+      this.capture = spawn("parec", parecArgs, {
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+    } else {
+      const ffmpegArgs = [
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-fflags",
+        "nobuffer",
+        "-flags",
+        "low_delay",
+        "-probesize",
+        "32",
+        "-analyzeduration",
+        "0",
+        "-thread_queue_size",
+        "32",
+        "-f",
+        "pulse",
+        "-i",
+        this.options.pulseSource,
+        "-ac",
+        String(CHANNELS),
+        "-ar",
+        String(SAMPLE_RATE),
+        "-f",
+        "s16le",
+        "-flush_packets",
+        "1",
+        "pipe:1"
+      ];
+
+      console.log(`[linux-client] capture backend: ffmpeg, source=${this.options.pulseSource}`);
+      this.capture = spawn(this.options.ffmpegPath, ffmpegArgs, {
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+    }
 
     this.capture.stdout.on("data", (chunk) => {
       this.pendingPcm = Buffer.concat([this.pendingPcm, chunk]);
@@ -206,7 +247,12 @@ const client = new LinuxAudioHubClient({
   deviceId: args["device-id"] || process.env.AUDIO_HUB_DEVICE_ID || `linux-${os.hostname()}`,
   audioUrl: toAudioWebSocketUrl(serverUrl),
   pulseSource: args.source || detectPulseMonitorSource(),
-  ffmpegPath: args.ffmpeg || process.env.FFMPEG_PATH || "ffmpeg"
+  ffmpegPath: args.ffmpeg || process.env.FFMPEG_PATH || "ffmpeg",
+  captureBackend: args.backend || process.env.AUDIO_HUB_CAPTURE_BACKEND || "auto",
+  captureLatencyMs: Number.parseInt(
+    args["latency-ms"] || process.env.AUDIO_HUB_CAPTURE_LATENCY_MS || String(DEFAULT_CAPTURE_LATENCY_MS),
+    10
+  )
 });
 
 client.start();
